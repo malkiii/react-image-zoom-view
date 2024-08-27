@@ -47,9 +47,9 @@ export default function App() {
         alias eligendi deleniti modi ipsam sed asperiores!
       </p>
       <ImageView
-        src="https://picsum.photos/720/1080"
+        src="https://picsum.photos/1180/1770"
         className="block italic"
-        aspectRatio="720/1080"
+        aspectRatio="1180/1770"
         alt="Portrait Image"
       />
     </main>
