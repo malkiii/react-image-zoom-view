@@ -29,7 +29,7 @@ export function ImageView({ aspectRatio, className, ...props }: ImageViewProps) 
     if (window.innerWidth / width < window.innerHeight / height) {
       setFullScreenClass(cn('w-full', !isPortrait && 'max-w-5xl'));
     } else {
-      setFullScreenClass(isPortrait ? 'h-screen' : 'h-[75vh]');
+      setFullScreenClass(isPortrait ? 'h-dvh' : 'h-[75dvh]');
     }
   }, [isOpen]);
 
@@ -71,18 +71,27 @@ export function ImageView({ aspectRatio, className, ...props }: ImageViewProps) 
   const shouldZoom = React.useRef(false);
 
   // Exit the image view
-  const exit = React.useCallback(() => {
-    setBounds(0);
-    setIsZooming(false);
-    toggleOpen();
-  }, [toggleOpen]);
+  const exit = React.useCallback(
+    (e?: KeyboardEvent) => {
+      if (!isOpen || (e && e.key !== 'Escape')) return;
+      setBounds(0);
+      setIsZooming(false);
+      toggleOpen();
+    },
+    [isOpen, toggleOpen],
+  );
+
+  React.useEffect(() => {
+    window.addEventListener('keydown', exit);
+    return () => window.removeEventListener('keydown', exit);
+  }, [exit]);
 
   return (
     <div style={{ aspectRatio, touchAction: isOpen ? 'none' : undefined }}>
       <div
-        onClick={exit}
+        onClick={() => exit()}
         className={cn(
-          'fixed inset-0 bg-black/50 transition-opacity duration-300',
+          'fixed inset-0 bg-black/65 transition-opacity duration-300',
           !isOpen && 'pointer-events-none opacity-0',
         )}
       />
@@ -114,7 +123,7 @@ export function ImageView({ aspectRatio, className, ...props }: ImageViewProps) 
           isZooming
             ? cn(
                 'fixed left-0 top-0 cursor-zoom-out max-w-none rounded-none',
-                bounds > 0 ? 'h-screen' : 'w-full',
+                bounds > 0 ? 'h-dvh' : 'w-full',
               )
             : isOpen
               ? `fixed left-1/2 top-1/2 [translate:-50%_-50%] cursor-zoom-in ${fullScreenClass}`

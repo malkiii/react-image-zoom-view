@@ -3,13 +3,13 @@
 import { ImageView } from './image-view';
 
 export default function App() {
-  const aspectRatio = '1920/1080';
-  // const aspectRatio = '1152/864';
-  // const aspectRatio = '1080/1920';
-
   return (
     <main className="w-full max-w-xl py-20 *:max-w-full mx-auto grid gap-6">
-      <a href="" target="_blank" className="block underline underline-offset-4">
+      <a
+        href="https://github.com/malkiii/react-image-zoom-view/blob/master/src/image-view.tsx"
+        target="_blank"
+        className="block underline underline-offset-4"
+      >
         Source code <span className="font-mono">↗</span>
       </a>
       <p>
@@ -18,9 +18,9 @@ export default function App() {
         odio ipsum.
       </p>
       <ImageView
-        src={`https://picsum.photos/${aspectRatio}`}
-        className="rounded-2xl block"
-        aspectRatio={aspectRatio}
+        src="https://picsum.photos/1280/720"
+        className="block italic"
+        aspectRatio="1280/720"
         alt="Landscape Image"
       />
       <p>
@@ -32,15 +32,26 @@ export default function App() {
         libero alias ratione officia, iure voluptate et!
       </p>
       <ImageView
-        src={`https://picsum.photos/${aspectRatio}`}
-        className="rounded-2xl block"
-        aspectRatio={aspectRatio}
-        alt="Portrait Image"
+        src="https://picsum.photos/800/800"
+        className="block italic"
+        aspectRatio="1/1"
+        alt="Square Image"
       />
       <p>
-        Similique expedita enim saepe, dolorum eveniet temporibus corrupti animi optio deleniti
-        libero alias ratione officia, iure voluptate et!
+        Quibusdam magnam voluptatibus voluptatem dignissimos dicta necessitatibus sed rem, quo
+        suscipit error explicabo minima eaque quasi, doloribus cum quam ad quis nesciunt.
       </p>
+      <p>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque aut aspernatur eligendi
+        fugiat dolor accusantium at dignissimos, earum quaerat natus deleniti quam. Voluptatibus
+        alias eligendi deleniti modi ipsam sed asperiores!
+      </p>
+      <ImageView
+        src="https://picsum.photos/720/1080"
+        className="block italic"
+        aspectRatio="720/1080"
+        alt="Portrait Image"
+      />
     </main>
   );
 }
