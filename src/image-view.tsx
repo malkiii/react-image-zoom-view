@@ -152,7 +152,7 @@ function useImageViewControls() {
   const shouldZoom = React.useRef(false);
   const handleMouseEvents = React.useCallback(
     (e: React.MouseEvent<HTMLImageElement>) => {
-      if (window.matchMedia('(hover: none)').matches) return;
+      if (window.matchMedia('(hover: none)').matches) return e.preventDefault();
 
       if (e.type === 'mousedown') {
         shouldZoom.current = isOpen;
