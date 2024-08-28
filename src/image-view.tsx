@@ -130,16 +130,17 @@ function useImageViewControls() {
   const lastTap = React.useRef(0);
   const handleTouchEvents = React.useCallback(
     (e: React.TouchEvent<HTMLImageElement>) => {
+      const currentTime = new Date().getTime();
+
       if (e.type === 'touchmove') {
         lastTap.current = 0;
         return;
-      }
+      } else if (e.type === 'touchend') {
+        const tapLength = currentTime - lastTap.current;
 
-      const currentTime = new Date().getTime();
-      const tapLength = currentTime - lastTap.current;
-
-      if (isOpen && tapLength > 0 && tapLength < 300) {
-        toggleZoom();
+        if (isOpen && tapLength > 0 && tapLength < 300) {
+          toggleZoom();
+        }
       }
 
       lastTap.current = currentTime;
