@@ -6,6 +6,67 @@ type ImageViewProps = React.ComponentPropsWithoutRef<typeof motion.img> & {
 };
 
 export function ImageView({ aspectRatio, className, ...props }: ImageViewProps) {
+  const {
+    isOpen,
+    bounds,
+    fullScreenClass,
+    isZooming,
+    imageRef,
+    toggleOpen,
+    handleTouchEvents,
+    handleMouseEvents,
+    exit,
+  } = useImageViewControls();
+
+  return (
+    <div style={{ aspectRatio, touchAction: isOpen ? 'none' : undefined }}>
+      <div
+        onClick={() => exit()}
+        className={cn(
+          'fixed inset-0 bg-black/65 transition-opacity duration-300',
+          !isOpen && 'pointer-events-none opacity-0',
+        )}
+      />
+      <motion.img
+        ref={imageRef}
+        {...props}
+        layout={true}
+        drag={isOpen}
+        dragElastic={0.2}
+        dragTransition={{ bounceStiffness: 600 }}
+        dragConstraints={{
+          top: Math.min(0, bounds),
+          left: -Math.max(0, bounds),
+          right: 0,
+          bottom: 0,
+        }}
+        animate={bounds ? undefined : { x: 0, y: 0 }}
+        transition={{ ease: 'circOut', duration: 0.3 }}
+        onClick={() => !isOpen && toggleOpen()}
+        // handle mouse events
+        onMouseDown={handleMouseEvents}
+        onMouseMove={handleMouseEvents}
+        onMouseUp={handleMouseEvents}
+        onTouchEnd={handleTouchEvents}
+        onTouchMove={handleTouchEvents}
+        className={cn(
+          className,
+          isZooming
+            ? cn(
+                'fixed left-0 top-0 cursor-zoom-out max-w-none rounded-none',
+                bounds > 0 ? 'h-dvh' : 'w-full',
+              )
+            : isOpen
+              ? `fixed left-1/2 top-1/2 [translate:-50%_-50%] cursor-zoom-in ${fullScreenClass}`
+              : 'cursor-pointer',
+        )}
+      />
+    </div>
+  );
+}
+
+// Custom hook to control all the image view logic
+function useImageViewControls() {
   const [isOpen, setOpen] = React.useState(false);
   const [fullScreenClass, setFullScreenClass] = React.useState('');
 
@@ -54,22 +115,6 @@ export function ImageView({ aspectRatio, className, ...props }: ImageViewProps) 
     });
   }, []);
 
-  // Handle double-tap event for zooming
-  const lastTap = React.useRef(0);
-  const handleDoubleTap = React.useCallback(() => {
-    const currentTime = new Date().getTime();
-    const tapLength = currentTime - lastTap.current;
-
-    if (isOpen && tapLength > 0 && tapLength < 300) {
-      toggleZoom();
-    }
-
-    lastTap.current = currentTime;
-  }, [isOpen, toggleZoom]);
-
-  // Handle zoom-out on mouse up
-  const shouldZoom = React.useRef(false);
-
   // Exit the image view
   const exit = React.useCallback(
     (e?: KeyboardEvent) => {
@@ -81,57 +126,61 @@ export function ImageView({ aspectRatio, className, ...props }: ImageViewProps) 
     [isOpen, toggleOpen],
   );
 
+  // Handle touch events
+  const lastTap = React.useRef(0);
+  const handleTouchEvents = React.useCallback(
+    (e: React.TouchEvent<HTMLImageElement>) => {
+      if (e.type === 'touchmove') {
+        lastTap.current = 0;
+        return;
+      }
+
+      const currentTime = new Date().getTime();
+      const tapLength = currentTime - lastTap.current;
+
+      if (isOpen && tapLength > 0 && tapLength < 300) {
+        toggleZoom();
+      }
+
+      lastTap.current = currentTime;
+    },
+    [isOpen, toggleZoom],
+  );
+
+  // Handle mouse events
+  const shouldZoom = React.useRef(false);
+  const handleMouseEvents = React.useCallback(
+    (e: React.MouseEvent<HTMLImageElement>) => {
+      if (window.matchMedia('(hover: none)').matches) return;
+
+      if (e.type === 'mousedown') {
+        shouldZoom.current = isOpen;
+      } else if (e.type === 'mousemove') {
+        shouldZoom.current = false;
+      } else if (e.type === 'mouseup' && shouldZoom.current) {
+        toggleZoom();
+      }
+    },
+    [isOpen, toggleZoom],
+  );
+
   React.useEffect(() => {
     window.addEventListener('keydown', exit);
     return () => window.removeEventListener('keydown', exit);
   }, [exit]);
 
-  return (
-    <div style={{ aspectRatio, touchAction: isOpen ? 'none' : undefined }}>
-      <div
-        onClick={() => exit()}
-        className={cn(
-          'fixed inset-0 bg-black/65 transition-opacity duration-300',
-          !isOpen && 'pointer-events-none opacity-0',
-        )}
-      />
-      <motion.img
-        ref={imageRef}
-        {...props}
-        layout={true}
-        drag={isOpen}
-        dragElastic={0.2}
-        dragTransition={{ bounceStiffness: 600 }}
-        dragConstraints={{
-          top: Math.min(0, bounds),
-          left: -Math.max(0, bounds),
-          right: 0,
-          bottom: 0,
-        }}
-        animate={bounds ? undefined : { x: 0, y: 0 }}
-        transition={{ ease: 'circOut', duration: 0.3 }}
-        onClick={() => !isOpen && toggleOpen()}
-        // handle mouse events
-        onMouseDown={() => (shouldZoom.current = isOpen)}
-        onMouseMove={() => (shouldZoom.current = false)}
-        onMouseUp={() => shouldZoom.current && toggleZoom()}
-        // handle touch events
-        onTouchEnd={handleDoubleTap}
-        onTouchMove={() => (lastTap.current = 0)}
-        className={cn(
-          className,
-          isZooming
-            ? cn(
-                'fixed left-0 top-0 cursor-zoom-out max-w-none rounded-none',
-                bounds > 0 ? 'h-dvh' : 'w-full',
-              )
-            : isOpen
-              ? `fixed left-1/2 top-1/2 [translate:-50%_-50%] cursor-zoom-in ${fullScreenClass}`
-              : 'cursor-pointer',
-        )}
-      />
-    </div>
-  );
+  return {
+    isOpen,
+    bounds,
+    fullScreenClass,
+    isZooming,
+    imageRef,
+    toggleOpen,
+    toggleZoom,
+    handleTouchEvents,
+    handleMouseEvents,
+    exit,
+  };
 }
 
 function cn(...classes: (string | false | undefined | null)[]) {

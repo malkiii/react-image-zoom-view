@@ -4,7 +4,7 @@ import { ImageView } from './image-view';
 
 export default function App() {
   return (
-    <main className="w-full max-w-xl py-20 *:max-w-full mx-auto grid gap-6">
+    <main className="w-full max-w-xl py-20 px-3 *:max-w-full mx-auto grid gap-6">
       <a
         href="https://github.com/malkiii/react-image-zoom-view/blob/master/src/image-view.tsx"
         target="_blank"
