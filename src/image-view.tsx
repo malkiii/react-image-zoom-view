@@ -136,6 +136,7 @@ function useImageViewControls() {
         lastTap.current = 0;
         return;
       } else if (e.type === 'touchend') {
+        e.stopPropagation();
         const tapLength = currentTime - lastTap.current;
 
         if (isOpen && tapLength > 0 && tapLength < 300) {
