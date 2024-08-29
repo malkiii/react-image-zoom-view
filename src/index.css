@@ -3,23 +3,11 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: #eee;
-    --foreground: #111;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --background: #111;
-      --foreground: #eee;
-    }
-  }
-
   html {
     scrollbar-width: thin;
   }
 
   body {
-    @apply text-[--foreground] bg-[--background] font-sans min-h-dvh antialiased content-center;
+    @apply font-sans min-h-dvh antialiased content-center;
   }
 }
