@@ -13,7 +13,7 @@ export function ImageView({ aspectRatio, className, ...props }: ImageViewProps) 
     isZooming,
     imageRef,
     toggleOpen,
-    handleTouchEvents,
+    // handleTouchEvents,
     handleMouseEvents,
     exit,
   } = useImageViewControls();
