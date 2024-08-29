@@ -1,5 +1,3 @@
-'use client';
-
 import { ImageView } from './image-view';
 
 export default function App() {
@@ -21,7 +19,7 @@ export default function App() {
         src="https://picsum.photos/1280/720"
         className="block italic"
         aspectRatio="1280/720"
-        alt="Landscape Image"
+        alt="First Image"
       />
       <p>
         Eaque pariatur nobis blanditiis eos saepe, veniam est. Officiis possimus quas, dolore, est
@@ -32,10 +30,10 @@ export default function App() {
         libero alias ratione officia, iure voluptate et!
       </p>
       <ImageView
-        src="https://picsum.photos/800/800"
+        src="https://picsum.photos/1280/960"
         className="block italic"
-        aspectRatio="1/1"
-        alt="Square Image"
+        aspectRatio="4/3"
+        alt="Second Image"
       />
       <p>
         Quibusdam magnam voluptatibus voluptatem dignissimos dicta necessitatibus sed rem, quo
@@ -50,7 +48,7 @@ export default function App() {
         src="https://picsum.photos/1180/1770"
         className="block italic"
         aspectRatio="1180/1770"
-        alt="Portrait Image"
+        alt="Third Image"
       />
     </main>
   );
