@@ -35,10 +35,10 @@ export function ImageView({ aspectRatio, className, ...props }: ImageViewProps) 
         dragElastic={0.2}
         dragTransition={{ bounceStiffness: 600 }}
         dragConstraints={{
-          top: Math.min(0, bounds),
-          left: -Math.max(0, bounds),
-          right: 0,
-          bottom: 0,
+          top: Math.min(0, bounds / 2),
+          left: -Math.max(0, bounds / 2),
+          right: Math.max(0, bounds / 2),
+          bottom: -Math.min(0, bounds / 2),
         }}
         animate={bounds ? undefined : { x: 0, y: 0 }}
         transition={{ ease: 'circOut', duration: 0.3 }}
@@ -47,18 +47,15 @@ export function ImageView({ aspectRatio, className, ...props }: ImageViewProps) 
         onMouseDown={handleMouseEvents}
         onMouseMove={handleMouseEvents}
         onMouseUp={handleMouseEvents}
-        onTouchEnd={handleTouchEvents}
-        onTouchMove={handleTouchEvents}
+        // onTouchEnd={handleTouchEvents}
+        // onTouchMove={handleTouchEvents}
         className={cn(
           className,
+          isOpen && 'fixed left-1/2 [translate:-50%_-50%] top-1/2 max-w-none',
+          isZooming ? 'cursor-zoom-out' : isOpen ? 'cursor-zoom-in' : 'cursor-pointer',
           isZooming
-            ? cn(
-                'fixed left-0 top-0 cursor-zoom-out max-w-none rounded-none',
-                bounds > 0 ? 'h-dvh' : 'w-full',
-              )
-            : isOpen
-              ? `fixed left-1/2 top-1/2 [translate:-50%_-50%] cursor-zoom-in ${fullScreenClass}`
-              : 'cursor-pointer',
+            ? cn('cursor-zoom-out rounded-none', bounds > 0 ? 'h-dvh' : 'w-full')
+            : isOpen && fullScreenClass,
         )}
       />
     </div>
