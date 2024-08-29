@@ -77,10 +77,6 @@ function useImageViewControls() {
   const toggleOpen = React.useCallback(() => {
     setOpen((curr) => !curr);
 
-    // disable scrolling
-    document.body.style.paddingRight = isOpen ? '' : `${getScrollbarWidth()}px`;
-    document.body.style.overflow = isOpen ? '' : 'hidden';
-
     if (!imageRef.current) return;
 
     const { offsetWidth: width, offsetHeight: height } = imageRef.current;
@@ -91,7 +87,7 @@ function useImageViewControls() {
     } else {
       setFullScreenClass(isPortrait ? 'h-dvh' : 'h-[75dvh]');
     }
-  }, [isOpen]);
+  }, []);
 
   const toggleZoom = React.useCallback(() => {
     setIsZooming((curr) => {
@@ -109,6 +105,9 @@ function useImageViewControls() {
           setBounds(window.innerHeight - fullHeight);
         }
       }
+
+      // hide the scrollbar
+      document.body.style.overflow = curr ? '' : 'hidden';
 
       return !curr;
     });
@@ -189,8 +188,4 @@ function useImageViewControls() {
 
 function cn(...classes: (string | false | undefined | null)[]) {
   return classes.filter(Boolean).join(' ').trim();
-}
-
-function getScrollbarWidth() {
-  return window.innerWidth - document.documentElement.clientWidth;
 }
