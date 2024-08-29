@@ -13,17 +13,17 @@ export function ImageView({ aspectRatio, className, ...props }: ImageViewProps) 
     isZooming,
     imageRef,
     toggleOpen,
-    // handleTouchEvents,
+    handleTouchEvents,
     handleMouseEvents,
     exit,
   } = useImageViewControls();
 
   return (
-    <div style={{ aspectRatio, touchAction: isOpen ? 'none' : undefined }}>
+    <div style={{ aspectRatio }}>
       <div
         onClick={() => exit()}
         className={cn(
-          'fixed inset-0 bg-black/65 transition-opacity duration-300',
+          'fixed inset-0 bg-black/65 touch-none transition-opacity duration-300',
           !isOpen && 'pointer-events-none opacity-0',
         )}
       />
@@ -47,8 +47,10 @@ export function ImageView({ aspectRatio, className, ...props }: ImageViewProps) 
         onMouseDown={handleMouseEvents}
         onMouseMove={handleMouseEvents}
         onMouseUp={handleMouseEvents}
-        // onTouchEnd={handleTouchEvents}
-        // onTouchMove={handleTouchEvents}
+        // handle touch events
+        onTouchStartCapture={handleTouchEvents}
+        onTouchEndCapture={handleTouchEvents}
+        onTouchMoveCapture={handleTouchEvents}
         className={cn(
           className,
           isOpen && 'fixed left-1/2 [translate:-50%_-50%] top-1/2 max-w-none',
@@ -127,13 +129,17 @@ function useImageViewControls() {
   const lastTap = React.useRef(0);
   const handleTouchEvents = React.useCallback(
     (e: React.TouchEvent<HTMLImageElement>) => {
+      if (e.touches.length > 1) return;
+      if (isOpen && e.type === 'touchend') return e.preventDefault();
+
       const currentTime = new Date().getTime();
 
       if (e.type === 'touchmove') {
         lastTap.current = 0;
         return;
-      } else if (e.type === 'touchend') {
-        e.stopPropagation();
+      }
+
+      if (e.type === 'touchstart') {
         const tapLength = currentTime - lastTap.current;
 
         if (isOpen && tapLength > 0 && tapLength < 300) {
@@ -150,8 +156,6 @@ function useImageViewControls() {
   const shouldZoom = React.useRef(false);
   const handleMouseEvents = React.useCallback(
     (e: React.MouseEvent<HTMLImageElement>) => {
-      if (window.matchMedia('(hover: none)').matches) return e.preventDefault();
-
       if (e.type === 'mousedown') {
         shouldZoom.current = isOpen;
       } else if (e.type === 'mousemove') {
@@ -163,6 +167,7 @@ function useImageViewControls() {
     [isOpen, toggleZoom],
   );
 
+  // Handle Escape key press
   React.useEffect(() => {
     window.addEventListener('keydown', exit);
     return () => window.removeEventListener('keydown', exit);
