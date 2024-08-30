@@ -117,8 +117,11 @@ function useImageViewControls() {
   const exit = React.useCallback(
     (e?: KeyboardEvent) => {
       if (!isOpen || (e && e.key !== 'Escape')) return;
+
       setBounds(0);
       setIsZooming(false);
+      document.body.style.overflow = '';
+
       toggleOpen();
     },
     [isOpen, toggleOpen],
